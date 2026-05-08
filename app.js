@@ -9,6 +9,7 @@ function showSection(id) {
   if (id === 'dashboard')    updateDashboard();
 }
 
+
 // ─── TOAST ────────────────────────────────────────────────
 function showToast(msg, type = 'success') {
   const t = document.getElementById('toast');
