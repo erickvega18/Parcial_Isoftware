@@ -13,6 +13,7 @@ function scheduleReminder(appointment) {
   console.log(`📧 Recordatorio agendado para: ${appointment.patientName}`);
 }
 
+
 function checkReminders() {
   const reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
   const now  = new Date();
