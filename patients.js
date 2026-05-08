@@ -2,6 +2,7 @@
 function getPatients() {
   return JSON.parse(localStorage.getItem('patients') || '[]');
 }
+
 function savePatients(p) {
   localStorage.setItem('patients', JSON.stringify(p));
 }
