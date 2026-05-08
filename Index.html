@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sistema de Citas Médicas</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="brand"><i class="fas fa-heartbeat"></i> MediCitas</div>
+    <ul class="nav-links">
+      <li><a href="#" onclick="showSection('dashboard')">Inicio</a></li>
+      <li><a href="#" onclick="showSection('register')">Pacientes</a></li>
+      <li><a href="#" onclick="showSection('schedule')">Agendar Cita</a></li>
+      <li><a href="#" onclick="showSection('appointments')">Mis Citas</a></li>
+      <li><a href="#" onclick="showSection('availability')">Disponibilidad</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="section active">
+      <div class="hero">
+        <h1>Bienvenido a <span>SaludVital</span></h1>
+        <p>Gestiona tus citas médicas de forma rápida y sencilla</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><i class="fas fa-users"></i><h3 id="total-patients">0</h3><p>Pacientes</p></div>
+        <div class="stat-card"><i class="fas fa-calendar-check"></i><h3 id="total-appointments">0</h3><p>Citas Agendadas</p></div>
+        <div class="stat-card"><i class="fas fa-clock"></i><h3 id="pending-appointments">0</h3><p>Citas Pendientes</p></div>
+        <div class="stat-card"><i class="fas fa-bell"></i><h3 id="total-reminders">0</h3><p>Recordatorios</p></div>
+      </div>
+      <div class="quick-actions">
+        <button class="btn btn-primary" onclick="showSection('register')"><i class="fas fa-user-plus"></i> Nuevo Paciente</button>
+        <button class="btn btn-secondary" onclick="showSection('schedule')"><i class="fas fa-calendar-plus"></i> Agendar Cita</button>
+        <button class="btn btn-outline" onclick="showSection('availability')"><i class="fas fa-search"></i> Ver Disponibilidad</button>
+      </div>
+    </section>
+
+    <!-- REGISTRO DE PACIENTES -->
+    <section id="register" class="section">
+      <div class="section-header">
+        <h2><i class="fas fa-user-plus"></i> Registro de Pacientes</h2>
+      </div>
+      <div class="form-card">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nombre Completo *</label>
+            <input type="text" id="pat-name" placeholder="Ej: Juan Pérez" />
+          </div>
+          <div class="form-group">
+            <label>Cédula / ID *</label>
+            <input type="text" id="pat-id" placeholder="Ej: 1234567890" />
+          </div>
+          <div class="form-group">
+            <label>Fecha de Nacimiento *</label>
+            <input type="date" id="pat-birth" />
+          </div>
+          <div class="form-group">
+            <label>Teléfono *</label>
+            <input type="tel" id="pat-phone" placeholder="Ej: 3001234567" />
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="pat-email" placeholder="correo@ejemplo.com" />
+          </div>
+          <div class="form-group">
+            <label>EPS / Aseguradora</label>
+            <select id="pat-eps">
+              <option value="">Seleccionar...</option>
+              <option>Sura</option>
+              <option>Compensar</option>
+              <option>Nueva EPS</option>
+              <option>Sanitas</option>
+              <option>Famisanar</option>
+              <option>Particular</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <label>Dirección</label>
+            <input type="text" id="pat-address" placeholder="Calle, ciudad..." />
+          </div>
+          <div class="form-group full-width">
+            <label>Antecedentes Médicos</label>
+            <textarea id="pat-history" placeholder="Alergias, enfermedades previas..." rows="3"></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="registerPatient()"><i class="fas fa-save"></i> Registrar Paciente</button>
+          <button class="btn btn-outline" onclick="clearForm('register')"><i class="fas fa-times"></i> Limpiar</button>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-top:2rem">
+        <h3>Pacientes Registrados</h3>
+        <input type="text" id="search-patient" placeholder="Buscar paciente..." oninput="searchPatients()" class="search-input"/>
+      </div>
+      <div id="patients-list" class="table-wrapper"></div>
+    </section>
+
+    <!-- AGENDAMIENTO DE CITAS -->
+    <section id="schedule" class="section">
+      <div class="section-header">
+        <h2><i class="fas fa-calendar-plus"></i> Agendar Cita</h2>
+      </div>
+      <div class="form-card">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Paciente *</label>
+            <select id="apt-patient">
+              <option value="">Seleccionar paciente...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Especialidad *</label>
+            <select id="apt-specialty" onchange="loadDoctors()">
+              <option value="">Seleccionar especialidad...</option>
+              <option value="general">Medicina General</option>
+              <option value="cardiology">Cardiología</option>
+              <option value="pediatrics">Pediatría</option>
+              <option value="dermatology">Dermatología</option>
+              <option value="orthopedics">Ortopedia</option>
+              <option value="neurology">Neurología</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Médico *</label>
+            <select id="apt-doctor" onchange="loadAvailableTimes()">
+              <option value="">Primero selecciona especialidad</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fecha *</label>
+            <input type="date" id="apt-date" onchange="loadAvailableTimes()" />
+          </div>
+          <div class="form-group">
+            <label>Hora Disponible *</label>
+            <select id="apt-time">
+              <option value="">Selecciona médico y fecha</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tipo de Consulta</label>
+            <select id="apt-type">
+              <option value="first">Primera Vez</option>
+              <option value="followup">Control / Seguimiento</option>
+              <option value="urgency">Urgencias</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <label>Motivo de Consulta</label>
+            <textarea id="apt-reason" placeholder="Describe brevemente el motivo..." rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label><input type="checkbox" id="apt-reminder" checked /> Enviar recordatorio automático</label>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="scheduleAppointment()"><i class="fas fa-calendar-check"></i> Confirmar Cita</button>
+          <button class="btn btn-outline" onclick="clearForm('schedule')"><i class="fas fa-times"></i> Limpiar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MIS CITAS -->
+    <section id="appointments" class="section">
+      <div class="section-header">
+        <h2><i class="fas fa-calendar-alt"></i> Gestión de Citas</h2>
+        <div class="filter-group">
+          <select id="filter-status" onchange="filterAppointments()">
+            <option value="all">Todas</option>
+            <option value="scheduled">Agendadas</option>
+            <option value="cancelled">Canceladas</option>
+            <option value="completed">Completadas</option>
+          </select>
+        </div>
+      </div>
+      <div id="appointments-list" class="appointments-grid"></div>
+    </section>
+
+    <!-- DISPONIBILIDAD MÉDICA -->
+    <section id="availability" class="section">
+      <div class="section-header">
+        <h2><i class="fas fa-user-md"></i> Disponibilidad Médica</h2>
+      </div>
+      <div class="form-card">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Especialidad</label>
+            <select id="avail-specialty" onchange="checkAvailability()">
+              <option value="">Todas las especialidades</option>
+              <option value="general">Medicina General</option>
+              <option value="cardiology">Cardiología</option>
+              <option value="pediatrics">Pediatría</option>
+              <option value="dermatology">Dermatología</option>
+              <option value="orthopedics">Ortopedia</option>
+              <option value="neurology">Neurología</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fecha</label>
+            <input type="date" id="avail-date" onchange="checkAvailability()" />
+          </div>
+        </div>
+      </div>
+      <div id="availability-grid" class="doctors-grid"></div>
+    </section>
+
+    <!-- MODAL REPROGRAMAR -->
+    <div id="reschedule-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3><i class="fas fa-calendar-edit"></i> Reprogramar Cita</h3>
+          <button onclick="closeModal()" class="close-btn">&times;</button>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nueva Fecha *</label>
+            <input type="date" id="reschedule-date" onchange="loadRescheduleTimes()" />
+          </div>
+          <div class="form-group">
+            <label>Nueva Hora *</label>
+            <select id="reschedule-time">
+              <option value="">Selecciona fecha primero</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <label>Motivo del cambio</label>
+            <textarea id="reschedule-reason" rows="2" placeholder="Razón de reprogramación..."></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="confirmReschedule()"><i class="fas fa-check"></i> Confirmar</button>
+          <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATIONS -->
+    <div id="toast" class="toast hidden"></div>
+
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/patients.js"></script>
+  <script src="js/appointments.js"></script>
+  <script src="js/reminders.js"></script>
+</body>
+</html>
