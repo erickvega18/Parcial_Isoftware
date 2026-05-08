@@ -7,6 +7,7 @@ const DOCTORS = {
   neurology:   [{ id:'d11', name:'Dr. Esteban Mora' },   { id:'d12', name:'Dra. Camila Peña' }],
 };
 
+
 const ALL_TIMES = ['07:00','08:00','09:00','10:00','11:00','14:00','15:00','16:00','17:00'];
 
 function getAppointments() { return JSON.parse(localStorage.getItem('appointments') || '[]'); }
